@@ -8,18 +8,47 @@
 
 #include <iostream>
 #include "cdk.h"
-
-
-#define MATRIX_WIDTH 4
-#define MATRIX_HEIGHT 3
-#define BOX_WIDTH 15
-#define MATRIX_NAME_STRING "Test Matrix"
-
+#include <fstream>
+#include <iomanip>
+#include <stdint.h>
+#include <string>
+#include <sstream>
 using namespace std;
 
+class BinaryFileHeader
+{
+	public:
+       		uint32_t magicNumber;
+		uint32_t versionNumber;
+		uint64_t numRecords;
+};
+
+const int maxRecordStringLength = 25;
+
+class BinaryFileRecord
+{
+	public:
+		uint8_t strLength;
+		char stringBuffer[maxRecordStringLength];
+};
+
+#define MATRIX_WIDTH 3
+#define MATRIX_HEIGHT 5
+#define BOX_WIDTH 30
+#define MATRIX_NAME_STRING "Binary File Contents"
 
 int main()
 {
+  	BinaryFileHeader *myHeader = new BinaryFileHeader();
+
+	ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
+
+	binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
+	cout << myHeader->magicNumber << endl;
+	cout << myHeader->versionNumber << endl;
+	cout << myHeader->numRecords << endl;
+
+	binInfile.close();
 
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
@@ -68,7 +97,30 @@ int main()
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+ // setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+	stringstream ss;
+	ss << std::hex << myHeader->magicNumber;
+	char *magNum;
+	string tmp = ss.str();
+	magNum = const_cast<char*>(tmp.c_str());
+	setCDKMatrixCell(myMatrix, 1, 1, magNum);
+	ss.str("");
+	ss.clear();
+	
+	ss << myHeader->versionNumber;
+	char *verNum;
+	tmp = ss.str();
+	verNum = const_cast<char*>(tmp.c_str());
+	setCDKMatrixCell(myMatrix, 1, 2, verNum);
+	ss.str("");
+	ss.clear();
+
+	ss << myHeader->numRecords;
+	char *numRec;
+	tmp = ss.str();
+	numRec = const_cast<char*>(tmp.c_str());
+	setCDKMatrixCell(myMatrix, 1, 3, numRec);
+	
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */
