@@ -1,7 +1,7 @@
 #Samuel Chen ~ sxc 144230 ~ CS 3377 Perkins
 
 CXX = g++
-CXXFLAGS = -Wall -g 
+CXXFLAGS = -Wall -g
 CPPFLAGS = -I/scratch/perkins/include
 LDFLAGS = -L/scratch/perkins/lib
 LDLIBS = -l cdk -lcurses 
