@@ -39,17 +39,6 @@ class BinaryFileRecord
 
 int main()
 {
-  	BinaryFileHeader *myHeader = new BinaryFileHeader();
-
-	ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
-
-	binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
-	cout << myHeader->magicNumber << endl;
-	cout << myHeader->versionNumber << endl;
-	cout << myHeader->numRecords << endl;
-
-	binInfile.close();
-
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
   CDKMATRIX     *myMatrix;           // CDK Screen Matrix
@@ -98,28 +87,77 @@ int main()
    * Dipslay a message
    */
  // setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+  	BinaryFileHeader *myHeader = new BinaryFileHeader();
+
+	ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
+
+	binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
+	//cout << myHeader->magicNumber << endl;
+	//cout << myHeader->versionNumber << endl;
+	//cout << myHeader->numRecords << endl;
+	
+	BinaryFileRecord *myRecord = new BinaryFileRecord();
+	stringstream ss2;
+	char *word;
+	string tmp;
+	char result4[100];
+	char *strlength = "strlen: ";
+
+	for(int i = 2; (unsigned)i<( myHeader->numRecords + 2); i++)
+	{
+		binInfile.read((char*) myRecord, sizeof(BinaryFileRecord));
+
+		ss2 << strlen(myRecord->stringBuffer);
+		tmp = ss2.str();
+		strcpy(result4, strlength);
+		strcat(result4, const_cast<char*>(tmp.c_str()));
+		setCDKMatrixCell(myMatrix, i, 1, result4);
+		ss2.str("");
+		ss2.clear();
+
+		ss2 << myRecord->stringBuffer << endl;
+		tmp = ss2.str();
+		word = const_cast<char*>(tmp.c_str());
+		setCDKMatrixCell(myMatrix, i, 2, word);
+		ss2.str("");
+		ss2.clear();
+	}
+
+	binInfile.close();
+
+	char result[100];
+	char result2[100];
+	char result3[100];
+	char *magic = "Magic: ";
+	char *version = "Version: ";
+	char *num = "NumRecords: ";
+	
 	stringstream ss;
 	ss << std::hex << myHeader->magicNumber;
-	char *magNum;
-	string tmp = ss.str();
-	magNum = const_cast<char*>(tmp.c_str());
-	setCDKMatrixCell(myMatrix, 1, 1, magNum);
-	ss.str("");
-	ss.clear();
-	
-	ss << myHeader->versionNumber;
-	char *verNum;
 	tmp = ss.str();
-	verNum = const_cast<char*>(tmp.c_str());
-	setCDKMatrixCell(myMatrix, 1, 2, verNum);
+	strcpy(result, magic);
+	strcat(result, const_cast<char*>(tmp.c_str()));
+	setCDKMatrixCell(myMatrix, 1, 1, result);
 	ss.str("");
 	ss.clear();
 
+	stringstream ss3;
+	
+	ss3 << myHeader->versionNumber;
+	tmp = ss3.str();
+	strcpy(result2, version);
+	strcat(result2, const_cast<char*>(tmp.c_str()));
+	setCDKMatrixCell(myMatrix, 1, 2, result2);
+	ss3.str("");
+	ss3.clear();
+
 	ss << myHeader->numRecords;
-	char *numRec;
 	tmp = ss.str();
-	numRec = const_cast<char*>(tmp.c_str());
-	setCDKMatrixCell(myMatrix, 1, 3, numRec);
+	strcpy(result3, num);
+	strcat(result3, const_cast<char*>(tmp.c_str()));
+	setCDKMatrixCell(myMatrix, 1, 3, result3);
+	ss.str("");
+	ss.clear();
 	
   drawCDKMatrix(myMatrix, true);    /* required  */
 
